@@ -1,0 +1,37 @@
+@startuml
+
+System "Экосистема Тёплый дом" as Ecosystem {
+
+    Container "Smart Home Service" as SmartHome
+    Container "Device Management Service" as DeviceManagement
+    Container "Telemetry & Analytics Service" as Telemetry
+    Container "User Management Service" as UserManagement
+    Container "Billing Service" as Billing
+    Container "Partner API Gateway" as PartnerAPI
+    Container "Notification Service" as Notification
+    Container "Logging & Monitoring Service" as Logging
+
+    ContainerDb "PostgreSQL (Users, Billing)" as DBUsersBilling
+    ContainerDb "InfluxDB (Telemetry)" as DBTelemetry
+    ContainerDb "Device Config DB" as DBDeviceConfig
+
+    ContainerQueue "Event Bus (Kafka)" as EventBus
+}
+
+' Взаимодействия между контейнерами
+UserManagement -> DBUsersBilling : Хранение данных пользователей
+Billing -> DBUsersBilling : Управление подписками
+SmartHome -> DeviceManagement : Запрос управления устройствами
+SmartHome -> Telemetry : Получение данных с датчиков
+DeviceManagement -> DBDeviceConfig : Сохранение конфигурации устройств
+Telemetry -> DBTelemetry : Запись телеметрии
+
+' Взаимодействие через Event Bus
+DeviceManagement -> EventBus : Уведомления об изменениях устройств
+Telemetry -> EventBus : Поток телеметрии
+EventBus -> Notification : Генерация push-уведомлений
+
+' Интеграция с партнёрами
+PartnerAPI -> DeviceManagement : Подключение сторонних устройств
+
+@enduml
