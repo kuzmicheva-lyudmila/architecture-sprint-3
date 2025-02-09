@@ -1,0 +1,68 @@
+@startuml
+class DeviceManagementService {
+    +api: API
+    +commandHandler: CommandHandler
+    +deviceStateManager: DeviceStateManager
+    +deviceConfigManager: DeviceConfigManager
+    +eventPublisher: EventPublisher
+    +deviceIntegration: DeviceIntegrationLayer
+    +manageDevice(device: Device): void
+    +getDeviceStatus(deviceId: String): DeviceStatus
+}
+
+class API {
+    +handleRequest(request: Request): Response
+}
+
+class CommandHandler {
+    +executeCommand(command: Command): void
+}
+
+class DeviceStateManager {
+    +getState(deviceId: String): DeviceState
+    +updateState(deviceId: String, state: DeviceState): void
+}
+
+class DeviceConfigManager {
+    +getConfig(deviceId: String): DeviceConfig
+    +updateConfig(deviceId: String, config: DeviceConfig): void
+}
+
+class EventPublisher {
+    +publishEvent(event: Event): void
+}
+
+class DeviceIntegrationLayer {
+    +connectDevice(deviceId: String): void
+    +disconnectDevice(deviceId: String): void
+}
+
+class Device {
+    +deviceId: String
+    +deviceType: String
+    +status: DeviceStatus
+    +config: DeviceConfig
+}
+
+class DeviceStatus {
+    +state: String
+    +lastUpdate: Date
+}
+
+class DeviceConfig {
+    +settings: Map<String, String>
+}
+
+class Event {
+    +eventType: String
+    +timestamp: Date
+}
+
+DeviceManagementService "1" *-- "1" API : uses
+DeviceManagementService "1" *-- "1" CommandHandler : uses
+DeviceManagementService "1" *-- "1" DeviceStateManager : uses
+DeviceManagementService "1" *-- "1" DeviceConfigManager : uses
+DeviceManagementService "1" *-- "1" EventPublisher : uses
+DeviceManagementService "1" *-- "1" DeviceIntegrationLayer : uses
+
+@enduml

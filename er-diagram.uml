@@ -1,0 +1,55 @@
+@startuml
+entity "User" as User {
+    +id: int <<PK>>
+    +name: string
+    +email: string
+    +password_hash: string
+    +created_at: datetime
+}
+
+entity "House" as House {
+    +id: int <<PK>>
+    +user_id: int <<FK>>
+    +address: string
+    +created_at: datetime
+}
+
+entity "Device" as Device {
+    +id: int <<PK>>
+    +device_type_id: int <<FK>>
+    +house_id: int <<FK>>
+    +serial_number: string
+    +status: string
+    +created_at: datetime
+}
+
+entity "DeviceType" as DeviceType {
+    +id: int <<PK>>
+    +name: string
+    +description: string
+}
+
+entity "TelemetryData" as TelemetryData {
+    +id: int <<PK>>
+    +device_id: int <<FK>>
+    +timestamp: datetime
+    +temperature: float
+    +humidity: float
+    +power_usage: float
+}
+
+entity "Module" as Module {
+    +id: int <<PK>>
+    +name: string
+    +description: string
+    +device_id: int <<FK>>
+}
+
+' Связи
+User ||--o| House : owns
+House ||--o| Device : contains
+Device ||--o| TelemetryData : generates
+Device ||--o| Module : includes
+DeviceType ||--o| Device : defines
+
+@enduml

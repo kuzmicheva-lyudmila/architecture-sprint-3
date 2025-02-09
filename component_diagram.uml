@@ -1,0 +1,52 @@
+@startuml
+!define RECTANGLE class
+
+' Система
+System "Экосистема Тёплый дом" as Ecosystem {
+
+    ' Микросервисы
+    RECTANGLE "Device Management Service" as DeviceManagement {
+        RECTANGLE "API Gateway" as API
+        RECTANGLE "Command Handler" as CommandHandler
+        RECTANGLE "Device State Manager" as DeviceStateManager
+        RECTANGLE "Device Configuration Manager" as DeviceConfigManager
+        RECTANGLE "Event Publisher" as EventPublisher
+        RECTANGLE "Device Integration Layer" as DeviceIntegration
+    }
+
+    ' Взаимодействие с другими сервисами
+    RECTANGLE "Smart Home Service" as SmartHome
+    RECTANGLE "Telemetry & Analytics Service" as Telemetry
+    RECTANGLE "User Management Service" as UserManagement
+    RECTANGLE "Notification Service" as Notification
+
+    ' Базы данных
+    RECTANGLE "PostgreSQL (Users, Billing)" as DBUsersBilling
+    RECTANGLE "InfluxDB (Telemetry)" as DBTelemetry
+    RECTANGLE "Device Config DB" as DBDeviceConfig
+
+    ' Очереди сообщений
+    RECTANGLE "Event Bus (Kafka)" as EventBus
+}
+
+' Взаимодействие компонентов внутри Device Management
+API --> CommandHandler : Отправка команд
+CommandHandler --> DeviceStateManager : Выполнение команд
+DeviceStateManager --> DeviceConfigManager : Обновление состояния устройства
+DeviceStateManager --> DeviceIntegration : Управление устройствами
+DeviceStateManager --> EventPublisher : Публикация событий
+
+' Взаимодействие с другими сервисами
+DeviceManagement --> SmartHome : Запрос управления устройствами
+DeviceManagement --> Telemetry : Передача данных о состоянии
+DeviceManagement --> DBDeviceConfig : Чтение и запись конфигураций устройств
+
+' Взаимодействие через EventBus
+DeviceManagement --> EventBus : Отправка событий о состоянии устройств
+Telemetry --> EventBus : Отправка телеметрии
+EventBus --> Notification : Генерация уведомлений
+
+' Интеграция с внешними устройствами
+DeviceIntegration --> DeviceManagement : Подключение сторонних устройств
+
+@enduml
