@@ -1,4 +1,6 @@
 @startuml
+title ER-диаграмма - Экосистема "Тёплый дом"
+
 entity "User" as User {
     +id: int <<PK>>
     +name: string
@@ -9,9 +11,13 @@ entity "User" as User {
 
 entity "House" as House {
     +id: int <<PK>>
-    +user_id: int <<FK>>
     +address: string
     +created_at: datetime
+}
+
+entity "UserHouse" as UserHouse {
+    +user_id: int <<FK>>
+    +house_id: int <<FK>>
 }
 
 entity "Device" as Device {
@@ -46,7 +52,8 @@ entity "Module" as Module {
 }
 
 ' Связи
-User ||--o| House : owns
+User ||--o{ UserHouse : "owns"
+House ||--o{ UserHouse : "owned by"
 House ||--o| Device : contains
 Device ||--o| TelemetryData : generates
 Device ||--o| Module : includes

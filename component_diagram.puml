@@ -1,32 +1,34 @@
 @startuml
-!define RECTANGLE class
+!define RECTANGLE component
+
+title Компонентная диаграмма - Экосистема "Тёплый дом"
 
 ' Система
-System "Экосистема Тёплый дом" as Ecosystem {
+package "Экосистема Тёплый дом" as Ecosystem {
 
     ' Микросервисы
-    RECTANGLE "Device Management Service" as DeviceManagement {
-        RECTANGLE "API Gateway" as API
-        RECTANGLE "Command Handler" as CommandHandler
-        RECTANGLE "Device State Manager" as DeviceStateManager
-        RECTANGLE "Device Configuration Manager" as DeviceConfigManager
-        RECTANGLE "Event Publisher" as EventPublisher
-        RECTANGLE "Device Integration Layer" as DeviceIntegration
+    package "Device Management Service" as DeviceManagement {
+        component "API Gateway" as API
+        component "Command Handler" as CommandHandler
+        component "Device State Manager" as DeviceStateManager
+        component "Device Configuration Manager" as DeviceConfigManager
+        component "Event Publisher" as EventPublisher
+        component "Device Integration Layer" as DeviceIntegration
     }
 
     ' Взаимодействие с другими сервисами
-    RECTANGLE "Smart Home Service" as SmartHome
-    RECTANGLE "Telemetry & Analytics Service" as Telemetry
-    RECTANGLE "User Management Service" as UserManagement
-    RECTANGLE "Notification Service" as Notification
+    component "Smart Home Service" as SmartHome
+    component "Telemetry & Analytics Service" as Telemetry
+    component "User Management Service" as UserManagement
+    component "Notification Service" as Notification
 
     ' Базы данных
-    RECTANGLE "PostgreSQL (Users, Billing)" as DBUsersBilling
-    RECTANGLE "InfluxDB (Telemetry)" as DBTelemetry
-    RECTANGLE "Device Config DB" as DBDeviceConfig
+    database "PostgreSQL (Users, Billing)" as DBUsersBilling
+    database "InfluxDB (Telemetry)" as DBTelemetry
+    database "Device Config DB" as DBDeviceConfig
 
     ' Очереди сообщений
-    RECTANGLE "Event Bus (Kafka)" as EventBus
+    queue "Event Bus (Kafka)" as EventBus
 }
 
 ' Взаимодействие компонентов внутри Device Management
