@@ -1,0 +1,54 @@
+@startuml
+!define RECTANGLE component
+
+title Компонентная диаграмма - Экосистема "Тёплый дом"
+
+' Система
+package "Экосистема Тёплый дом" as Ecosystem {
+
+    ' Микросервисы
+    package "Device Management Service" as DeviceManagement {
+        component "API Gateway" as API
+        component "Command Handler" as CommandHandler
+        component "Device State Manager" as DeviceStateManager
+        component "Device Configuration Manager" as DeviceConfigManager
+        component "Event Publisher" as EventPublisher
+        component "Device Integration Layer" as DeviceIntegration
+    }
+
+    ' Взаимодействие с другими сервисами
+    component "Smart Home Service" as SmartHome
+    component "Telemetry & Analytics Service" as Telemetry
+    component "User Management Service" as UserManagement
+    component "Notification Service" as Notification
+
+    ' Базы данных
+    database "PostgreSQL (Users, Billing)" as DBUsersBilling
+    database "InfluxDB (Telemetry)" as DBTelemetry
+    database "Device Config DB" as DBDeviceConfig
+
+    ' Очереди сообщений
+    queue "Event Bus (Kafka)" as EventBus
+}
+
+' Взаимодействие компонентов внутри Device Management
+API --> CommandHandler : Отправка команд
+CommandHandler --> DeviceStateManager : Выполнение команд
+DeviceStateManager --> DeviceConfigManager : Обновление состояния устройства
+DeviceStateManager --> DeviceIntegration : Управление устройствами
+DeviceStateManager --> EventPublisher : Публикация событий
+
+' Взаимодействие с другими сервисами
+DeviceManagement --> SmartHome : Запрос управления устройствами
+DeviceManagement --> Telemetry : Передача данных о состоянии
+DeviceManagement --> DBDeviceConfig : Чтение и запись конфигураций устройств
+
+' Взаимодействие через EventBus
+DeviceManagement --> EventBus : Отправка событий о состоянии устройств
+Telemetry --> EventBus : Отправка телеметрии
+EventBus --> Notification : Генерация уведомлений
+
+' Интеграция с внешними устройствами
+DeviceIntegration --> DeviceManagement : Подключение сторонних устройств
+
+@enduml

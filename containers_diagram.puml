@@ -1,0 +1,52 @@
+@startuml
+!define C4_CONTAINER https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+!include C4_CONTAINER
+
+title Диаграмма контейнеров - Экосистема "Тёплый дом"
+
+System_Boundary(Ecosystem, "Экосистема Тёплый дом") {
+    ' Сервисы
+    Container(SmartHome, "Smart Home Service", "Spring Boot", "Управление умным домом")
+    Container(DeviceManagement, "Device Management Service", "Spring Boot", "Управление устройствами")
+    Container(Telemetry, "Telemetry & Analytics Service", "Spring Boot", "Сбор и анализ телеметрии")
+    Container(UserManagement, "User Management Service", "Spring Boot", "Управление пользователями")
+    Container(Billing, "Billing Service", "Spring Boot", "Управление подписками и оплатами")
+    Container(PartnerAPI, "Partner API Gateway", "Spring Boot", "Интеграция сторонних устройств")
+    Container(Notification, "Notification Service", "Spring Boot", "Отправка уведомлений")
+    Container(Logging, "Logging & Monitoring Service", "ELK Stack", "Сбор и мониторинг логов")
+
+    ' Базы данных
+    ContainerDb(DBUsersBilling, "PostgreSQL", "База данных пользователей и подписок")
+    ContainerDb(DBTelemetry, "InfluxDB", "Хранение телеметрии")
+    ContainerDb(DBDeviceConfig, "Device Config DB", "Хранение конфигурации устройств")
+
+    ' Очередь событий
+    ContainerQueue(EventBus, "Event Bus (Kafka)", "Kafka", "Передача событий")
+}
+
+' Взаимодействие пользователей и системы
+UserManagement -> DBUsersBilling : Управление пользователями
+Billing -> DBUsersBilling : Управление подписками и оплатами
+
+' Работа с устройствами и телеметрией
+SmartHome -> DeviceManagement : Управление устройствами
+SmartHome -> Telemetry : Запрос телеметрии
+DeviceManagement -> DBDeviceConfig : Чтение/запись конфигураций
+Telemetry -> DBTelemetry : Запись данных телеметрии
+
+' Обработка событий
+DeviceManagement -> EventBus : События изменения состояния устройств
+Telemetry -> EventBus : Поток данных телеметрии
+EventBus -> Notification : Генерация push-уведомлений
+
+' Интеграция с партнёрскими устройствами
+PartnerAPI -> DeviceManagement : Подключение сторонних устройств
+
+' Логирование и мониторинг
+SmartHome -> Logging : Логи событий
+DeviceManagement -> Logging : Логи изменений конфигураций
+Telemetry -> Logging : Логи данных телеметрии
+UserManagement -> Logging : Логи управления пользователями
+Billing -> Logging : Логи транзакций
+
+@enduml
